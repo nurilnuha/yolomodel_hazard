@@ -8,6 +8,7 @@ from ultralytics import YOLO
 
 
 BASE_DIR = Path(__file__).resolve().parent
+MAX_IMAGE_DIMENSION = 1280
 
 MODEL_CONFIGS = {
     # Add model1/model3 here after their best.pt and class_names.txt files are ready.
@@ -79,7 +80,9 @@ async def read_image(file: UploadFile) -> Image.Image:
         raise HTTPException(status_code=400, detail="Uploaded file is empty.")
 
     try:
-        return Image.open(BytesIO(contents)).convert("RGB")
+        image = Image.open(BytesIO(contents)).convert("RGB")
+        image.thumbnail((MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION))
+        return image
     except Exception as exc:
         raise HTTPException(status_code=400, detail="Uploaded file must be a valid image.") from exc
 
